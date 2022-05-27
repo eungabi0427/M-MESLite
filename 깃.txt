@@ -1,0 +1,5 @@
+HTTPS 주소
+https://github.com/manykite98/scmes_lite.git
+
+토큰 주소
+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
