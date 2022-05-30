@@ -10,33 +10,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: buildDefaultAppBar(),
-      appBar: defaultAppBar(appBar: AppBar()),
+      appBar: DefaultAppBar(
+        appBar: AppBar(),
+        appBarName: '메인화면',
+      ),
       body: Body(),
       drawer: NavigationDrawer(),
     );
   }
-
-  /*AppBar buildDefaultAppBar() {
-    return AppBar(
-      title: Text(
-        '메인화면',
-        style: TextStyle(fontFamily: 'Pretendard'),
-      ),
-      elevation: 0,
-      leading: Builder(builder: (context) {
-        return IconButton(
-          onPressed: () {
-            print('menu button is clicked');
-            Scaffold.of(context).openDrawer();
-          },
-          icon: SvgPicture.asset("assets/icons/menu.svg"),
-        );
-      }),
-      centerTitle: true,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(gradient: mainGradientColor),
-      ),
-    );
-  }*/
 }

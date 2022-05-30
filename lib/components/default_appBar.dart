@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:scmes_lite/constants.dart';
 
-class defaultAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const defaultAppBar({
+class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const DefaultAppBar({
     Key? key,
     required this.appBar,
+    required this.appBarName,
   }) : super(key: key);
 
   final AppBar appBar;
+  final String appBarName;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(
-        '메인화면',
-        style: TextStyle(fontFamily: 'Pretendard'),
-      ),
+          //'메인화면',
+          appBarName),
       elevation: 0,
       leading: Builder(builder: (context) {
         return IconButton(
