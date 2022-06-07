@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scmes_lite/Screens/Home/home_screen.dart';
+import 'package:scmes_lite/Screens/Inventory/inv_lot_due_screen.dart';
 import 'package:scmes_lite/Screens/Login/login_screen.dart';
 import 'package:scmes_lite/components/drawer/drawer_subMenu.dart';
 import 'package:scmes_lite/constants.dart';
@@ -14,7 +15,29 @@ class NavigationDrawer extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [buildHeader(context), buildMenuItem(context)],
+          children: [
+            buildHeader(context),
+            buildMenuItem(context),
+            /*InkWell(
+              onTap: () {},
+              child: Container(
+                height: getProportionateScreenHeight(71),
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: getProportionateScreenWidth(17)),
+                child: Icon(
+                  Icons.close,
+                  color: Color(0xFFE96977),
+                  size: getProportionateScreenWidth(34),
+                ),
+                decoration: BoxDecoration(
+                    color: Color(0xFFFB5E74).withOpacity(0.2),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(getProportionateScreenWidth(36)),
+                      topLeft: Radius.circular(getProportionateScreenWidth(36)),
+                    )),
+              ),
+            ),*/
+          ],
         ),
       ),
     );
@@ -77,7 +100,7 @@ class NavigationDrawer extends StatelessWidget {
               DrawerSubMenu(
                 subMenuName: '- 가전사업부',
                 press: () {
-                  Navigator.pushNamed(context, HomeScreen.routeName);
+                  Navigator.pushNamed(context, InvLotDueScreen.routeName);
                 },
               ),
               DrawerSubMenu(
@@ -143,12 +166,23 @@ class NavigationDrawer extends StatelessWidget {
             ],
           ),
           const Divider(color: Colors.black54),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('로그아웃'),
-            onTap: () {
-              Navigator.pushNamed(context, LoginScreen.routeName);
-            },
+          Stack(
+            children: [
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text('로그아웃'),
+                onTap: () {
+                  Navigator.pushNamed(context, LoginScreen.routeName);
+                },
+              ),
+            ],
+            /*child: ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('로그아웃'),
+              onTap: () {
+                Navigator.pushNamed(context, LoginScreen.routeName);
+              },
+            ),*/
           ),
         ],
       ),

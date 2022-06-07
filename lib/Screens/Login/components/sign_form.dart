@@ -16,9 +16,9 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
-  final scaffoldKey = GlobalKey<ScaffoldState>();
   late String id;
   late String password;
+  String userInfo = ""; // user의 정보를 저장하기 위한 변수
   bool remember = false;
   bool isHiddenPassword = true;
   final List<String> errors = [];
@@ -81,6 +81,35 @@ class _SignFormState extends State<SignForm> {
                   ));
                 }
               },
+              /*press: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                }
+                String objText, objText1, objText2, objBody;
+                objText1 = '$id';
+                objText2 = '$password';
+                //objText = '[{"id": "$id", "pwd": "$password"}]';
+                objBody = '<?xml version="1.0" encoding="utf-8"?>' +
+                    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                    '<soap:Body>' +
+                    '<Response_SearchData xmlns="http://tempuri.org/">' +
+                    //'<searchDataID>$objText</searchDataID>' +
+                    '<searchDataID>$objText1</searchDataID>' +
+                    '<searchDataPWD>$objText2</searchDataPWD>' +
+                    '</Response_SearchData>' +
+                    '</soap:Body>' +
+                    '</soap:Envelope>';
+
+                final response = await http.post(Uri.parse("http://192.168.101.241:62845/Login.asmx"),
+                    body: objBody,
+                    headers: {
+                      'Content-Type': 'text/xml; charset=utf-8',
+                      'SOAPAction': "http://tempuri.org/Response_SearchData"
+                    });
+
+                print('로그인성공');
+                Navigator.pushNamed(context, HomeScreen.routeName);
+              },*/
             )
           ],
         ));
