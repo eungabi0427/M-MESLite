@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scmes_lite/Screens/Home/home_screen.dart';
 import 'package:scmes_lite/components/form_error.dart';
@@ -6,6 +7,7 @@ import 'package:scmes_lite/components/suffix_icon.dart';
 import 'package:scmes_lite/constants.dart';
 import 'package:scmes_lite/helper/keyboard.dart';
 import 'package:scmes_lite/size_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignForm extends StatefulWidget {
   const SignForm({Key? key}) : super(key: key);
@@ -18,10 +20,42 @@ class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
   late String id;
   late String password;
-  String userInfo = ""; // user의 정보를 저장하기 위한 변수
-  bool remember = false;
+
   bool isHiddenPassword = true;
   final List<String> errors = [];
+
+  bool remember = false;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserEmailPassword();
+  }
+
+  void _loadUserEmailPassword() async {
+    print("Load Email");
+    try {
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      var _email = _prefs.getString("email") ?? "";
+      var _password = _prefs.getString("password") ?? "";
+      var _remeberMe = _prefs.getBool("remember_me") ?? false;
+
+      print(_remeberMe);
+      print(_email);
+      print(_password);
+      if (_remeberMe) {
+        setState(() {
+          remember = true;
+        });
+        _emailController.text = _email ?? "";
+        _passwordController.text = _password ?? "";
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -48,25 +82,28 @@ class _SignFormState extends State<SignForm> {
             buildIdFormField(),
             SizedBox(height: getProportionateScreenHeight(20)),
             buildPasswordFormField(isHiddenPassword),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Checkbox(
-                  value: remember,
-                  activeColor: red,
-                  onChanged: (value) {
-                    setState(() {
-                      remember = value!;
-                    });
-                  },
-                ),
-                Text('로그인정보 기억하기 ')
-              ],
+            GestureDetector(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Checkbox(
+                    value: remember,
+                    activeColor: red,
+                    onChanged: _handleRemeberme,
+                    /*onChanged: (value) {
+                      setState(() {
+                        remember = value!;
+                      });
+                    },*/
+                  ),
+                  Text('로그인정보 기억하기 ')
+                ],
+              ),
             ),
             FormError(size: size, errors: errors),
             RoundedButton(
               text: "LOGIN",
-              press: () {
+              press: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   // If all are valid then go to main screen
@@ -117,6 +154,7 @@ class _SignFormState extends State<SignForm> {
 
   TextFormField buildPasswordFormField(bool isHiddenPassword) {
     return TextFormField(
+      controller: _passwordController,
       obscureText: isHiddenPassword,
       onSaved: (newValue) => password = newValue!,
       onChanged: (value) {
@@ -162,6 +200,7 @@ class _SignFormState extends State<SignForm> {
 
   TextFormField buildIdFormField() {
     return TextFormField(
+      controller: _emailController,
       keyboardType: TextInputType.visiblePassword,
       onSaved: (newValue) => id = newValue!,
       onChanged: (value) {
@@ -199,6 +238,21 @@ class _SignFormState extends State<SignForm> {
     }*/
     setState(() {
       isHiddenPassword = !isHiddenPassword;
+    });
+  }
+
+  void _handleRemeberme(bool? value) {
+    print("Handle Rember Me");
+    remember = value!;
+    SharedPreferences.getInstance().then(
+      (prefs) {
+        prefs.setBool("remember_me", value);
+        prefs.setString('email', _emailController.text);
+        prefs.setString('password', _passwordController.text);
+      },
+    );
+    setState(() {
+      remember = value;
     });
   }
 }

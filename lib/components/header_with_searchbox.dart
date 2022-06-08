@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scmes_lite/components/icon_btn_qrcode.dart';
 import 'package:scmes_lite/components/icon_btn_search.dart';
-import 'package:scmes_lite/components/icon_btn_with_schQR.dart';
 import 'package:scmes_lite/constants.dart';
 
 class HeaderWithSearchBox extends StatelessWidget {
@@ -67,7 +67,6 @@ class HeaderWithSearchBox extends StatelessWidget {
                       ),
                     ),
                   ),
-                  //SvgPicture.asset("assets/icons/search.svg"),
                   IconBtnSearch(),
                   /*IconBtnWithSchQR(
                     size: size,
@@ -75,36 +74,15 @@ class HeaderWithSearchBox extends StatelessWidget {
                     press: () {
                       print('검색모양 버튼 누름');
                     },
-                    */ /*press: () async {
-                      String objText, objBody;
-                      objText = '$lotID';
-                      objBody = '<?xml version="1.0" encoding="utf-8"?>' +
-                          '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                          '<soap:Body>' +
-                          '<Response_SearchData xmlns="http://tempuri.org/">' +
-                          '<lotID>$objText</lotID>' +
-                          '</Response_SearchData>' +
-                          '</soap:Body>' +
-                          '</soap:Envelope>';
-
-                      final response = await http.post(Uri.parse("http://192.168.101.241:62845/Login.asmx"),
-                          body: objBody,
-                          headers: {
-                            'Content-Type': 'text/xml; charset=utf-8',
-                            'SOAPAction': "http://tempuri.org/Response_SearchData"
-                          });
-
-                      print('데이터가져오기 성공');
-
-                    },*/ /*
                   ),*/
-                  IconBtnWithSchQR(
+                  IconBtnQRcode(),
+                  /*IconBtnWithSchQR(
                     size: size,
                     svgSrc: "assets/icons/qrcode.svg",
                     press: () {
                       print('큐알코드 버튼 누름');
                     },
-                  ),
+                  ),*/
                 ],
               ),
             ),
