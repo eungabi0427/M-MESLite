@@ -10,19 +10,24 @@ class QRScanner extends StatefulWidget {
 }
 
 class _QRScannerState extends State<QRScanner> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   MobileScannerController cameraController = MobileScannerController();
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         MobileScanner(
-          allowDuplicates: false,
-          controller: cameraController,
-          onDetect: (Barcode barcode, MobileScannerArguments? args) {
-            debugPrint('Barcode Found!' + barcode.rawValue!);
-          },
-        ),
-        QRScannerOverlay(overlayColor: Colors.black.withOpacity(0.5))
+            allowDuplicates: false,
+            controller: cameraController,
+            onDetect: (Barcode barcode, MobileScannerArguments? args) {
+              if (barcode.rawValue == null) {
+                debugPrint('Failed to scan Barcode');
+              } else {
+                final String code = barcode.rawValue!;
+                debugPrint('Barcode found! $code');
+              }
+            }),
+        QRScannerOverlay(overlayColor: Colors.black.withOpacity(0.5)),
       ],
     );
   }

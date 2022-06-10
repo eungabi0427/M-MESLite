@@ -98,7 +98,7 @@ class NavigationDrawer extends StatelessWidget {
             title: Text('삼천산업(예시)'),
             children: [
               DrawerSubMenu(
-                subMenuName: '- 가전사업부',
+                subMenuName: '- 재고실사',
                 press: () {
                   Navigator.pushNamed(context, InvLotDueScreen.routeName);
                 },
