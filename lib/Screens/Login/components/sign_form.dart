@@ -1,6 +1,7 @@
+import 'dart:convert' show jsonDecode, utf8;
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:scmes_lite/Screens/Home/home_screen.dart';
 import 'package:scmes_lite/components/form_error.dart';
 import 'package:scmes_lite/components/rounded_button.dart';
 import 'package:scmes_lite/components/suffix_icon.dart';
@@ -19,6 +20,7 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
+  List<User> listModel = [];
 
   bool isHiddenPassword = true;
   final List<String> errors = [];
@@ -106,7 +108,7 @@ class _SignFormState extends State<SignForm> {
                   print('정규식 성공');
                   _callAPI();
                   KeyboardUtil.hideKeyboard(context);
-                  Navigator.pushNamed(context, HomeScreen.routeName);
+                  //Navigator.pushNamed(context, HomeScreen.routeName);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('로그인성공'),
                     duration: Duration(seconds: 2),
@@ -217,12 +219,42 @@ class _SignFormState extends State<SignForm> {
     objText2 = _passwordController.text;
     print('objText12  + $objText1 + $objText2');
 
-    // POST 방식
-    var url = Uri.parse('http://192.168.101.241:62845/Login.asmx/Response_SearchData');
-    var response = await http.post(url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {'searchDataID': objText1, 'searchDataPWD': objText2});
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    var url = Uri.parse("http://192.168.101.241:44300/WebService.asmx/Login");
+    var response = await http.get(url);
+    var statusCode = response.statusCode;
+    var responseHeaders = response.headers;
+    var responseBody = response.body;
+
+    print("statusCode: ${statusCode}");
+    print("responseHeaders: ${responseHeaders}");
+    print("responseBody: ${responseBody}");
+
+    /*var usersJson = jsonDecode(responseBody)['getUser'];
+    List<dynamic>? users = usersJson != null ? List.from(usersJson) : null;
+    // usersJson이 true면 List.from(usersJson) false면 null
+    print(users);*/
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      final items = (data['getUser'] as List).map((i) => User.fromJson(i));
+      for (final item in items) {
+        print(item.id);
+        print(item.name);
+      }
+    }
+  }
+}
+
+class User {
+  String id;
+  String name;
+  User(this.id, this.name);
+  factory User.fromJson(dynamic json) {
+    return User(json['ID'] as String, json['Name'] as String);
+  }
+  @override
+  String toString() {
+    return '{ ${this.id}, ${this.name} }';
   }
 }
