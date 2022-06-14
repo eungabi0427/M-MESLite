@@ -38,8 +38,7 @@ dependencies:
   http: ^0.13.0
   shared_preferences: ^2.0.10
   mobile_scanner: ^1.0.0
-  xml2json: ^5.1.0
-  xml: ^5.1.2
+  cp949_codec: ^0.0.2
 
 dev_dependencies:
   flutter_test:

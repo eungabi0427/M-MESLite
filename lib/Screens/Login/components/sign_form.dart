@@ -1,4 +1,4 @@
-import 'dart:convert' show jsonDecode, utf8;
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +9,6 @@ import 'package:scmes_lite/constants.dart';
 import 'package:scmes_lite/helper/keyboard.dart';
 import 'package:scmes_lite/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml2json/xml2json.dart';
 
 class SignForm extends StatefulWidget {
   const SignForm({Key? key}) : super(key: key);
@@ -20,13 +19,12 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
-  List<User> listModel = [];
 
   bool isHiddenPassword = true;
   final List<String> errors = [];
 
   bool remember = false;
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -50,7 +48,7 @@ class _SignFormState extends State<SignForm> {
         setState(() {
           remember = true;
         });
-        _emailController.text = _email ?? "";
+        _idController.text = _email ?? "";
         _passwordController.text = _password ?? "";
       }
     } catch (e) {
@@ -78,7 +76,6 @@ class _SignFormState extends State<SignForm> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     Size size = MediaQuery.of(context).size;
-    Xml2Json xml2json = Xml2Json();
     return Form(
         key: _formKey,
         child: Column(
@@ -163,7 +160,7 @@ class _SignFormState extends State<SignForm> {
 
   TextFormField buildIdFormField() {
     return TextFormField(
-      controller: _emailController,
+      controller: _idController,
       keyboardType: TextInputType.visiblePassword,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -204,7 +201,7 @@ class _SignFormState extends State<SignForm> {
     SharedPreferences.getInstance().then(
       (prefs) {
         prefs.setBool("remember_me", value);
-        prefs.setString('email', _emailController.text);
+        prefs.setString('email', _idController.text);
         prefs.setString('password', _passwordController.text);
       },
     );
@@ -213,28 +210,27 @@ class _SignFormState extends State<SignForm> {
     });
   }
 
-  void _callAPI() async {
-    String objText1, objText2;
-    objText1 = _emailController.text;
-    objText2 = _passwordController.text;
-    print('objText12  + $objText1 + $objText2');
+  Future<void> _callAPI() async {
+    String objText;
+    objText =
+        '[{ "serviceId" : "SYS_View_User_List","procCode" : "1","inMsg" : {"userId" : ${_idController.text},"password" : ${_passwordController.text}}]';
+    print('objText : $objText');
 
     var url = Uri.parse("http://192.168.101.241:44300/WebService.asmx/Login");
     var response = await http.get(url);
     var statusCode = response.statusCode;
-    var responseHeaders = response.headers;
     var responseBody = response.body;
 
     print("statusCode: ${statusCode}");
-    print("responseHeaders: ${responseHeaders}");
     print("responseBody: ${responseBody}");
 
-    /*var usersJson = jsonDecode(responseBody)['getUser'];
+    var decodedString = jsonDecode(utf8.decode(response.bodyBytes));
+    print(decodedString);
+    var usersJson = jsonDecode(decodedString)['getUser'];
     List<dynamic>? users = usersJson != null ? List.from(usersJson) : null;
     // usersJson이 true면 List.from(usersJson) false면 null
-    print(users);*/
 
-    if (response.statusCode == 200) {
+    /*if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       print(data);
       final items = (data['getUser'] as List).map((i) => User.fromJson(i));
@@ -242,7 +238,7 @@ class _SignFormState extends State<SignForm> {
         print(item.id);
         print(item.name);
       }
-    }
+    }*/
   }
 }
 
