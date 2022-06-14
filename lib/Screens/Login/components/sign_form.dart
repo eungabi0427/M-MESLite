@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:scmes_lite/components/form_error.dart';
@@ -48,8 +46,8 @@ class _SignFormState extends State<SignForm> {
         setState(() {
           remember = true;
         });
-        _idController.text = _email ?? "";
-        _passwordController.text = _password ?? "";
+        _idController.text = _email;
+        _passwordController.text = _password;
       }
     } catch (e) {
       print(e);
@@ -129,7 +127,7 @@ class _SignFormState extends State<SignForm> {
         } else if (value.isNotEmpty) {
           removeError(error: kMatchPassError);
         }
-        return null;
+        return;
       },
       validator: (value) {
         if (value!.isEmpty && !errors.contains(kPassNullError)) {
@@ -216,41 +214,20 @@ class _SignFormState extends State<SignForm> {
         '[{ "serviceId" : "SYS_View_User_List","procCode" : "1","inMsg" : {"userId" : ${_idController.text},"password" : ${_passwordController.text}}]';
     print('objText : $objText');
 
-    var url = Uri.parse("http://192.168.101.241:44300/WebService.asmx/Login");
+    var url = Uri.parse('http://192.168.101.241:44300/WebService.asmx/Login');
+    /* GET 방식 */
     var response = await http.get(url);
-    var statusCode = response.statusCode;
-    var responseBody = response.body;
-
-    print("statusCode: ${statusCode}");
-    print("responseBody: ${responseBody}");
-
-    var decodedString = jsonDecode(utf8.decode(response.bodyBytes));
-    print(decodedString);
-    var usersJson = jsonDecode(decodedString)['getUser'];
-    List<dynamic>? users = usersJson != null ? List.from(usersJson) : null;
-    // usersJson이 true면 List.from(usersJson) false면 null
-
-    /*if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print(data);
-      final items = (data['getUser'] as List).map((i) => User.fromJson(i));
-      for (final item in items) {
-        print(item.id);
-        print(item.name);
-      }
-    }*/
-  }
-}
-
-class User {
-  String id;
-  String name;
-  User(this.id, this.name);
-  factory User.fromJson(dynamic json) {
-    return User(json['ID'] as String, json['Name'] as String);
-  }
-  @override
-  String toString() {
-    return '{ ${this.id}, ${this.name} }';
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    /* POST 방식 */
+    response = await http.post(
+      url,
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: {
+        'json': objText,
+      },
+    );
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
   }
 }
