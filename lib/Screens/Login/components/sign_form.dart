@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:scmes_lite/Screens/Home/home_screen.dart';
+import 'package:scmes_lite/Services/auth.dart';
 import 'package:scmes_lite/components/form_error.dart';
 import 'package:scmes_lite/components/rounded_button.dart';
 import 'package:scmes_lite/components/suffix_icon.dart';
@@ -24,6 +27,9 @@ class _SignFormState extends State<SignForm> {
   bool remember = false;
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final AuthService authService = AuthService();
+  String jsonText = "";
 
   @override
   void initState() {
@@ -81,40 +87,65 @@ class _SignFormState extends State<SignForm> {
             buildIdFormField(),
             SizedBox(height: getProportionateScreenHeight(20)),
             buildPasswordFormField(isHiddenPassword),
-            GestureDetector(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Checkbox(
-                    value: remember,
-                    activeColor: red,
-                    onChanged: _handleRememberMe,
-                  ),
-                  const Text('로그인정보 기억하기 ')
-                ],
-              ),
-            ),
+            buildCheckBox(),
             FormError(size: size, errors: errors),
             RoundedButton(
               text: "LOGIN",
-              press: () {
+              press: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   print('정규식 성공');
-                  _callAPI();
+
+                  jsonText = '{';
+                  jsonText += '"serviceId" : "SYS_View_User_List", ';
+                  jsonText += '"procCode" : "1", ';
+                  jsonText += '"inMsg" : ';
+                  jsonText += '{"userId" : "${_idController.text}", "password" : "${_passwordController.text}"';
+                  jsonText += '}';
+
+                  print('jsonText + $jsonText');
+
+                  //'{ "serviceId" : "SYS_View_User_List","procCode" : "1","inMsg" : {"userId" : "${_idController.text}","password" : "${_passwordController.text}"}';
+
+                  var res = await authService.login(jsonText);
+                  switch (res!.statusCode) {
+                    case 200:
+                      final decodedString = jsonDecode(utf8.decode(res.bodyBytes));
+                      print(decodedString);
+                      break;
+                  }
                   KeyboardUtil.hideKeyboard(context);
-                  //Navigator.pushNamed(context, HomeScreen.routeName);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('로그인성공'),
-                    duration: Duration(seconds: 2),
-                    backgroundColor: blue.withOpacity(0.5),
-                    behavior: SnackBarBehavior.floating,
-                  ));
+                  Navigator.pushNamed(context, HomeScreen.routeName);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '로그인성공',
+                        //textAlign: TextAlign.center,
+                      ),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 }
               },
             )
           ],
         ));
+  }
+
+  GestureDetector buildCheckBox() {
+    return GestureDetector(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Checkbox(
+            value: remember,
+            activeColor: red,
+            onChanged: _handleRememberMe,
+          ),
+          const Text('로그인정보 기억하기 ')
+        ],
+      ),
+    );
   }
 
   TextFormField buildPasswordFormField(bool isHiddenPassword) {
@@ -146,7 +177,7 @@ class _SignFormState extends State<SignForm> {
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: IconButton(
           padding: EdgeInsets.only(right: 20),
-          onPressed: tooglePasswordView,
+          onPressed: togglePasswordView,
           icon: Icon(
             isHiddenPassword ? Icons.visibility_off : Icons.visibility,
             color: purple,
@@ -187,7 +218,7 @@ class _SignFormState extends State<SignForm> {
     );
   }
 
-  void tooglePasswordView() {
+  void togglePasswordView() {
     setState(() {
       isHiddenPassword = !isHiddenPassword;
     });
@@ -206,28 +237,5 @@ class _SignFormState extends State<SignForm> {
     setState(() {
       remember = value;
     });
-  }
-
-  Future<void> _callAPI() async {
-    String objText;
-    objText =
-        '[{ "serviceId" : "SYS_View_User_List","procCode" : "1","inMsg" : {"userId" : ${_idController.text},"password" : ${_passwordController.text}}]';
-    print('objText : $objText');
-
-    var url = Uri.parse('http://192.168.101.241:44300/WebService.asmx/Login');
-    /* GET 방식 */
-    var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    /* POST 방식 */
-    response = await http.post(
-      url,
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: {
-        'json': objText,
-      },
-    );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
   }
 }

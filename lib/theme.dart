@@ -9,6 +9,16 @@ ThemeData theme() {
     fontFamily: 'Pretendard',
     inputDecorationTheme: inputDecorationTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,
+    snackBarTheme: snackBarThemeData(),
+  );
+}
+
+SnackBarThemeData snackBarThemeData() {
+  return SnackBarThemeData(
+    backgroundColor: Colors.white,
+    contentTextStyle: TextStyle(color: Colors.green),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+    behavior: SnackBarBehavior.floating,
   );
 }
 
